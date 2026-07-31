@@ -1,0 +1,44 @@
+{
+  "name": "project manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "seed:permissions": "node prisma/seeders/permissionsSeeder.js",
+    "seed:roles": "node prisma/seeders/roles.seeder.js",
+    "seed:users": "node prisma/seeders/user.seeder.js",
+    "seed:all": "npx prisma db seed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dayjs": "^1.11.20",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-list-endpoints": "^7.1.1",
+    "express-rate-limit": "^8.3.2",
+    "ioredis": "^5.10.1",
+    "joi": "^18.0.2",
+    "joi-to-swagger": "^6.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1",
+    "nodemon": "^3.1.14",
+    "pg": "^8.16.3",
+    "prisma": "^7.4.2",
+    "redis": "^5.10.0",
+    "socket.io": "^4.8.3",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
