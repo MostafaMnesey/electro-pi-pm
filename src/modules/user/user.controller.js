@@ -11,11 +11,20 @@ export const getProfile = asyncHandler(async (req, res, next) => {
   });
 });
 
-export const users = asyncHandler(async (req, res, next) => {
+export const getAllusers = asyncHandler(async (req, res, next) => {
   const data = await service.usersService(req);
   return successResponse({
     res,
-    message: MESSAGES.LOGIN_SUCCESS,
+    message: MESSAGES.FETCHED,
+    data: data,
+  });
+});
+
+export const changeActiveStatus = asyncHandler(async (req, res, next) => {
+  const data = await service.changeUserActiveStatusService(req);
+  return successResponse({
+    res,
+    message: MESSAGES.USER_STATUS_UPDATED,
     data: data,
   });
 });

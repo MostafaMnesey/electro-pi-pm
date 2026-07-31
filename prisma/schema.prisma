@@ -15,6 +15,7 @@ model user {
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @updatedAt
   approved             Boolean                 @default(false)
+  active               Boolean                 @default(true)
   roleId               String?
   role                 role?                   @relation(fields: [roleId], references: [id])
 

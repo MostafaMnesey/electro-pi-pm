@@ -10,6 +10,8 @@ export const MESSAGES = {
   FORBIDDEN: "You do not have permission to access this resource",
   USER_NOT_FOUND: "User account was not found",
   USER_NOT_APPROVED: "User account is not approved yet",
+  USER_NOT_ACTIVE: "User account is deactivated",
+  USER_STATUS_UPDATED: "User status updated successfully",
   INVALID_CREDENTIALS: "Invalid email or password",
   SIGNUP_SUCCESS: "Account registered successfully, wait for admin approval",
   LOGIN_SUCCESS: "Login successful",
@@ -17,6 +19,8 @@ export const MESSAGES = {
   TOKEN_REFRESHED: "Token refreshed successfully",
   REFRESH_TOKEN_REQUIRED: "Refresh token is required",
   INVALID_REFRESH_TOKEN: "Invalid or expired refresh token",
+  ROLE_NOT_FOUND: "Role not found",
+  PROFILE_FETCHED: "Profile fetched successfully",
 
   // Generic Resource Actions
   SUCCESS: "Operation completed successfully",
@@ -35,7 +39,6 @@ export const MESSAGES = {
   CONFIRM_PASSWORD_INVALID: "Passwords do not match",
   CONFIRM_PASSWORD_REQUIRED: "Confirm password is required",
   NAME_REQUIRED: "name is required",
-  PROFILE_FETCHED: "profile fetched successfully",
 
   // Errors & Rate Limiting
   VALIDATION_ERROR: "Validation failed for the request payload",

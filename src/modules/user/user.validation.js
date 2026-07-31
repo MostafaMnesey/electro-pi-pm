@@ -3,21 +3,19 @@ import { MESSAGES } from "../../Constants/messages.constants.js";
 import generalFields from "../../Utils/GeneralFields/index.js";
 import { paginationSchema } from "../../Constants/globalValidation.js";
 
-export const getAllUsers = {
-  body: Joi.object({
-    ...paginationSchema,
-    search: Joi.string().optional().allow("").default("").messages({
-      "string.base": MESSAGES.NAME_REQUIRED,
-      "any.required": MESSAGES.NAME_REQUIRED,
-    }),
-    approve: Joi.boolean().optional().default(false).messages({
-      "boolean.base": MESSAGES.NAME_REQUIRED,
-      "any.required": MESSAGES.NAME_REQUIRED,
-    }),
-    role: Joi.string().optional().default("").messages({
-      "string.base": MESSAGES.NAME_REQUIRED,
-      "any.required": MESSAGES.NAME_REQUIRED,
-    }),
-    
+export const getAllUsersSchema = {
+  query: Joi.object({
+    page:paginationSchema.page,
+    limit:paginationSchema.limit,
+    search: Joi.string().optional().allow(""),
+    approved: Joi.boolean().optional(),
+    active: Joi.boolean().optional(),
+    role: Joi.string().optional().allow(""),
   }),
+};
+
+export const changeActiveStatusSchema = {
+  params: Joi.object({
+    id: generalFields.id.required(),
+  }).required(),
 };
