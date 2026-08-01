@@ -22,7 +22,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/wa3y_ci
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5440/pm_ci
 
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
           script: |
             set -e
 
-            cd /backend/wa3y
+            cd /electro-pi-pm
 
             # ── Step 1: Pull latest code ──────────────────────────────────────
             git pull origin main
