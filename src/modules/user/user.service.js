@@ -11,7 +11,7 @@ export const getProfileService = async (req) => {
 
 export const usersService = async (req) => {
   const { page = 1, limit = 10, search, role, approved, active } = req.query;
-  const where = { approved: true, active: true };
+  const where = { approved: true };
 
   if (search) {
     where.OR = [

@@ -52,11 +52,28 @@ export const signinService = async (req) => {
     model: "user",
     where: {
       email,
-      approved: true,
     },
+    include:{
+      role:{
+        include:{
+          rolePermissions:{
+            include:{
+              permission:true,
+            }
+          }
+        }
+      }
+    }
   });
 
-  if (!user || !user.approved) {
+  if (!user) {
+    errorResponse({
+      message: MESSAGES.INVALID_CREDENTIALS,
+      status: 401,
+    });
+  }
+
+  if (!user.approved) {
     errorResponse({
       message: MESSAGES.USER_NOT_APPROVED,
       status: 400,
@@ -78,12 +95,25 @@ export const signinService = async (req) => {
   if (!validPassword) {
     errorResponse({
       message: MESSAGES.INVALID_CREDENTIALS,
-      status: 400,
+      status: 401,
     });
   }
 
   const tokens = generateTokensForUser({ user });
-  return tokens;
+  return {
+    ...tokens,
+    role: user.role.name,
+    permissions: user.role.rolePermissions.map((rp) => {
+      return{
+        action:rp.permission.name,
+        code:rp.permission.code,
+        resource:rp.permission.resource,
+        
+      }
+      
+    }),
+    
+  };
 };
 
 export const refreshTokenService = async (req) => {

@@ -3,12 +3,13 @@
   "info": {
     "title": "Project Manager API",
     "version": "1.0.0",
-    "description": "Complete API endpoints for Authentication, User, Project, and Task modules."
+    "description": "Complete RESTful API documentation for Authentication, Users, Projects, and Tasks modules."
   },
   "servers": [
+
     {
-      "url": "http://localhost:3009/api/v1",
-      "description": "Local Development Server"
+      "url": "http://localhost:8090/api/v1",
+      "description": "Docker Development Server"
     }
   ],
   "components": {
@@ -16,7 +17,8 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "bearerFormat": "JWT",
+        "description": "Enter JWT Bearer token obtained from /authentication/signin"
       }
     }
   },
@@ -29,6 +31,7 @@
     "/authentication/signup": {
       "post": {
         "summary": "User Signup",
+        "description": "Register a new user account (Status defaults to unapproved, requires admin approval)",
         "tags": ["Authentication"],
         "security": [],
         "requestBody": {
@@ -45,13 +48,15 @@
           }
         },
         "responses": {
-          "200": { "description": "Account registered successfully" }
+          "201": { "description": "Account registered successfully, pending admin approval" },
+          "400": { "description": "Validation error or Email already exists" }
         }
       }
     },
     "/authentication/signin": {
       "post": {
         "summary": "User Signin",
+        "description": "Authenticate user and receive JWT access & refresh tokens",
         "tags": ["Authentication"],
         "security": [],
         "requestBody": {
@@ -59,58 +64,95 @@
           "content": {
             "application/json": {
               "example": {
-                "email": "jane.doe@example.com",
+                "email": "admin@pm.com",
                 "password": "Password123!"
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Login successful" }
+          "200": { "description": "Login successful, returns tokens and user permissions" },
+          "400": { "description": "Validation error or User account is not approved yet" },
+          "401": { "description": "Invalid email or password" },
+          "403": { "description": "User account is deactivated" }
+        }
+      }
+    },
+    "/authentication/refresh-token": {
+      "post": {
+        "summary": "Refresh Access Token",
+        "description": "Obtain new access token using a valid refresh token",
+        "tags": ["Authentication"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "refreshToken": "your_refresh_token_here"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Token refreshed successfully" },
+          "400": { "description": "Refresh token is required" },
+          "401": { "description": "Invalid or expired refresh token" }
         }
       }
     },
     "/user/profile": {
       "get": {
         "summary": "Get Profile",
+        "description": "Retrieve profile of currently authenticated user",
         "tags": ["Users"],
         "responses": {
-          "200": { "description": "Profile fetched successfully" }
+          "200": { "description": "Profile fetched successfully" },
+          "401": { "description": "Unauthorized token missing or invalid" }
         }
       }
     },
     "/user": {
       "get": {
         "summary": "Get All Users",
+        "description": "List users with search, role, active, and approval filters",
         "tags": ["Users"],
         "parameters": [
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
           { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
-          { "name": "search", "in": "query", "schema": { "type": "string" } }
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "role", "in": "query", "schema": { "type": "string" } },
+          { "name": "approved", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "active", "in": "query", "schema": { "type": "boolean" } }
         ],
         "responses": {
-          "200": { "description": "Users retrieved successfully" }
+          "200": { "description": "Users retrieved successfully" },
+          "403": { "description": "Forbidden - requires user:read permission" }
         }
       }
     },
     "/user/pending-approval": {
       "get": {
         "summary": "Get Pending Approval Users",
+        "description": "Get users waiting for admin registration approval",
         "tags": ["Users"],
         "responses": {
-          "200": { "description": "Pending users retrieved" }
+          "200": { "description": "Pending users retrieved" },
+          "403": { "description": "Forbidden - requires admin permission" }
         }
       }
     },
     "/user/{id}/approve": {
       "patch": {
-        "summary": "Approve User",
+        "summary": "Approve User Registration",
         "tags": ["Users"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "User approved successfully" }
+          "200": { "description": "User approved successfully" },
+          "400": { "description": "User is already approved" },
+          "404": { "description": "User account was not found" }
         }
       }
     },
@@ -119,10 +161,11 @@
         "summary": "Toggle User Active Status",
         "tags": ["Users"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "User status updated" }
+          "200": { "description": "User active status toggled" },
+          "404": { "description": "User account was not found" }
         }
       }
     },
@@ -141,6 +184,7 @@
       },
       "post": {
         "summary": "Create Project",
+        "description": "Create a new project (Restricted: Member role returns 403)",
         "tags": ["Projects"],
         "requestBody": {
           "required": true,
@@ -150,14 +194,16 @@
                 "name": "E-Commerce Project",
                 "description": "Main e-commerce platform.",
                 "members": [
-                  "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+                  "user-uuid-here"
                 ]
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Project created successfully" }
+          "201": { "description": "Project created successfully" },
+          "400": { "description": "Project already exists" },
+          "403": { "description": "Forbidden - Member cannot create project" }
         }
       }
     },
@@ -166,7 +212,7 @@
         "summary": "Get My Projects",
         "tags": ["Projects"],
         "responses": {
-          "200": { "description": "My projects retrieved" }
+          "200": { "description": "User member projects retrieved" }
         }
       }
     },
@@ -178,7 +224,8 @@
           { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Project fetched successfully" }
+          "200": { "description": "Project fetched successfully" },
+          "404": { "description": "Project not found" }
         }
       }
     },
@@ -187,7 +234,7 @@
         "summary": "Update Project",
         "tags": ["Projects"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "requestBody": {
           "required": true,
@@ -201,17 +248,19 @@
           }
         },
         "responses": {
-          "200": { "description": "Project updated" }
+          "200": { "description": "Project updated" },
+          "404": { "description": "Project not found" }
         }
       },
       "delete": {
         "summary": "Delete Project",
         "tags": ["Projects"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Project deleted" }
+          "200": { "description": "Project deleted" },
+          "404": { "description": "Project not found" }
         }
       }
     },
@@ -220,20 +269,21 @@
         "summary": "Add Members to Project",
         "tags": ["Projects"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "userIds": ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
+                "userIds": ["user-uuid-1", "user-uuid-2"]
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Members added" }
+          "200": { "description": "Members added successfully" },
+          "404": { "description": "Project or user ID not found" }
         }
       }
     },
@@ -242,29 +292,30 @@
         "summary": "Remove Members from Project",
         "tags": ["Projects"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "userIds": ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
+                "userIds": ["user-uuid-1"]
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Members removed" }
+          "200": { "description": "Members removed successfully" },
+          "404": { "description": "Project or user ID not found" }
         }
       }
     },
-    "/projects/{projectId}/tasks": {
+    "/tasks/projects/{projectId}/tasks": {
       "post": {
         "summary": "Create Task in Project",
         "tags": ["Tasks"],
         "parameters": [
-          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "requestBody": {
           "required": true,
@@ -275,23 +326,25 @@
                 "description": "Create PostgreSQL schema and models.",
                 "priority": "HIGH",
                 "dueDate": "2026-08-15T12:00:00.000Z",
-                "assigneeId": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+                "assigneeId": "user-uuid-here"
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Task created successfully" }
+          "201": { "description": "Task created successfully" },
+          "400": { "description": "Assignee is not a member of this project" },
+          "404": { "description": "Project not found" }
         }
       },
       "get": {
         "summary": "Get Project Tasks",
         "tags": ["Tasks"],
         "parameters": [
-          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
           { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["TODO", "IN_PROGRESS", "DONE"] } },
           { "name": "priority", "in": "query", "schema": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] } },
-          { "name": "assigneeId", "in": "query", "schema": { "type": "string", "format": "uuid" } },
+          { "name": "assigneeId", "in": "query", "schema": { "type": "string" } },
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
           { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } }
         ],
@@ -300,22 +353,23 @@
         }
       }
     },
-    "/tasks/{id}": {
+    "/tasks/tasks/{id}": {
       "get": {
         "summary": "Get Task By ID",
         "tags": ["Tasks"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Task details fetched" }
+          "200": { "description": "Task details fetched" },
+          "404": { "description": "Task not found" }
         }
       },
       "patch": {
         "summary": "Update Task Details (Admin Only)",
         "tags": ["Tasks"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "requestBody": {
           "required": true,
@@ -331,26 +385,31 @@
           }
         },
         "responses": {
-          "200": { "description": "Task updated successfully" }
+          "200": { "description": "Task updated successfully" },
+          "403": { "description": "Forbidden - Only Admin can update task metadata" },
+          "404": { "description": "Task not found" }
         }
       },
       "delete": {
         "summary": "Delete Task (Admin Only)",
         "tags": ["Tasks"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
-          "200": { "description": "Task deleted successfully" }
+          "200": { "description": "Task deleted successfully" },
+          "403": { "description": "Forbidden - Only Admin can delete task" },
+          "404": { "description": "Task not found" }
         }
       }
     },
-    "/tasks/{id}/status": {
+    "/tasks/tasks/{id}/status": {
       "patch": {
         "summary": "Update Task Status",
+        "description": "Update task status (Allowed for task assignee or Admin, returns 403 for non-assignee member)",
         "tags": ["Tasks"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "requestBody": {
           "required": true,
@@ -363,29 +422,34 @@
           }
         },
         "responses": {
-          "200": { "description": "Task status updated" }
+          "200": { "description": "Task status updated" },
+          "403": { "description": "Only the assigned member can update task status" },
+          "404": { "description": "Task not found" }
         }
       }
     },
-    "/tasks/{id}/assign": {
+    "/tasks/tasks/{id}/assign": {
       "patch": {
         "summary": "Reassign Task (Admin Only)",
         "tags": ["Tasks"],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "example": {
-                "assigneeId": "c56a4180-65aa-42ec-a945-5fd21dec0538"
+                "assigneeId": "new-user-uuid-here"
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Task reassigned successfully" }
+          "200": { "description": "Task reassigned successfully" },
+          "400": { "description": "Assignee is not a member of this project" },
+          "403": { "description": "Forbidden - Only Admin can reassign tasks" },
+          "404": { "description": "Task not found" }
         }
       }
     }

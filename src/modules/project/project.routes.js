@@ -15,7 +15,7 @@ router.get("/my-projects", authentication(), authorize(PERMISSIONS_V2.PROJECTS.R
 
 router.post("/", authentication(), validation(schemas.createProjectSchema), authorize(PERMISSIONS_V2.PROJECTS.CREATE), controller.createProject);
 
-router.get("/:slug", authentication(), validation(schemas.getProjectBySlugSchema), authorizeResource(resource), controller.getProjectBySlug);
+router.get("/:slug", authentication(), validation(schemas.getProjectBySlugSchema), authorize(PERMISSIONS_V2.PROJECTS.READ), controller.getProjectBySlug);
 
 router.patch("/:id", authentication(), validation(schemas.updateProjectSchema), authorizeResource(resource), controller.updateProject);
 
