@@ -1,5 +1,5 @@
 import Joi from "joi";
-export const paginationSchema = Joi.object({
+export const paginationSchema = {
   page: Joi.number().integer().min(1).default(1).messages({
     "number.base": "Page must be a number",
     "number.integer": "Page must be an integer",
@@ -13,4 +13,4 @@ export const paginationSchema = Joi.object({
     "number.max": "Limit must not exceed 1000",
     "any.required": "Limit is required",
   }),
-});
+}

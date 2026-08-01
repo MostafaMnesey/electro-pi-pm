@@ -55,21 +55,29 @@ export const signinService = async (req) => {
       approved: true,
     },
   });
-  if (!user) {
+
+  if (!user || !user.approved) {
     errorResponse({
-      message: "user not found or unapproved",
+      message: MESSAGES.USER_NOT_APPROVED,
       status: 400,
     });
   }
 
-  const hashPassword = await compareText({
+  if (!user.active) {
+    errorResponse({
+      message: MESSAGES.USER_NOT_ACTIVE,
+      status: 403,
+    });
+  }
+
+  const validPassword = await compareText({
     text: password,
     hash: user.password,
   });
 
-  if (!hashPassword) {
+  if (!validPassword) {
     errorResponse({
-      message: "Invalid  credentials",
+      message: MESSAGES.INVALID_CREDENTIALS,
       status: 400,
     });
   }
@@ -110,6 +118,7 @@ export const refreshTokenService = async (req) => {
     where: {
       id: decoded.id,
       approved: true,
+      active: true,
     },
   });
 

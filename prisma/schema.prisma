@@ -7,16 +7,21 @@ datasource db {
 }
 
 model user {
-  id                   String                  @id @default(uuid())
-  name                 String?
-  email                String                  @unique
-  phone                String?
-  password             String?
-  createdAt            DateTime                @default(now())
-  updatedAt            DateTime                @updatedAt
-  approved             Boolean                 @default(false)
-  roleId               String?
-  role                 role?                   @relation(fields: [roleId], references: [id])
+  id            String          @id @default(uuid())
+  name          String?
+  email         String          @unique
+  phone         String?
+  password      String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  approved      Boolean         @default(false)
+  active        Boolean         @default(true)
+  roleId        String?
+  role          role?           @relation(fields: [roleId], references: [id])
+  members       ProjectMember[]
+  projects      Project[]       @relation("ProjectOwner")
+  createdTasks  Task[]          @relation("CreatedTasks")
+  assignedTasks Task[]          @relation("AssignedTasks")
 
   @@index([email])
 }
@@ -58,3 +63,59 @@ model rolePermission {
   @@unique([roleId, permissionId])
 }
 
+model Project {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  slug        String          @unique
+  ownerId     String 
+  owner       user            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  members     ProjectMember[]
+  tasks       Task[]
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      user     @relation(fields: [userId], references: [id])
+  joinedAt  DateTime @default(now())
+
+  @@unique([projectId, userId]) 
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime
+  creatorId   String
+  creator     user         @relation("CreatedTasks", fields: [creatorId], references: [id])
+  assigneeId  String
+  assignee    user         @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([creatorId])
+}

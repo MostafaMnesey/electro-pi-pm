@@ -66,6 +66,10 @@ export const authentication = () => {
       return next(new Error(MESSAGES.USER_NOT_FOUND, { cause: 401 }));
     }
 
+    if (!user.active) {
+      return next(new Error(MESSAGES.USER_NOT_ACTIVE, { cause: 403 }));
+    }
+
     req.user = user;
     next();
   });

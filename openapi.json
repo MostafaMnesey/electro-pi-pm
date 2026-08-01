@@ -1,0 +1,393 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Project Manager API",
+    "version": "1.0.0",
+    "description": "Complete API endpoints for Authentication, User, Project, and Task modules."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3009/api/v1",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/authentication/signup": {
+      "post": {
+        "summary": "User Signup",
+        "tags": ["Authentication"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Jane Doe",
+                "email": "jane.doe@example.com",
+                "password": "Password123!",
+                "phone": "01012345678"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Account registered successfully" }
+        }
+      }
+    },
+    "/authentication/signin": {
+      "post": {
+        "summary": "User Signin",
+        "tags": ["Authentication"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "jane.doe@example.com",
+                "password": "Password123!"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful" }
+        }
+      }
+    },
+    "/user/profile": {
+      "get": {
+        "summary": "Get Profile",
+        "tags": ["Users"],
+        "responses": {
+          "200": { "description": "Profile fetched successfully" }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "Get All Users",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Users retrieved successfully" }
+        }
+      }
+    },
+    "/user/pending-approval": {
+      "get": {
+        "summary": "Get Pending Approval Users",
+        "tags": ["Users"],
+        "responses": {
+          "200": { "description": "Pending users retrieved" }
+        }
+      }
+    },
+    "/user/{id}/approve": {
+      "patch": {
+        "summary": "Approve User",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "User approved successfully" }
+        }
+      }
+    },
+    "/user/{id}/active": {
+      "patch": {
+        "summary": "Toggle User Active Status",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "User status updated" }
+        }
+      }
+    },
+    "/projects": {
+      "get": {
+        "summary": "Get All Projects",
+        "tags": ["Projects"],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Projects retrieved successfully" }
+        }
+      },
+      "post": {
+        "summary": "Create Project",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "E-Commerce Project",
+                "description": "Main e-commerce platform.",
+                "members": [
+                  "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Project created successfully" }
+        }
+      }
+    },
+    "/projects/my-projects": {
+      "get": {
+        "summary": "Get My Projects",
+        "tags": ["Projects"],
+        "responses": {
+          "200": { "description": "My projects retrieved" }
+        }
+      }
+    },
+    "/projects/{slug}": {
+      "get": {
+        "summary": "Get Project By Slug",
+        "tags": ["Projects"],
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Project fetched successfully" }
+        }
+      }
+    },
+    "/projects/{id}": {
+      "patch": {
+        "summary": "Update Project",
+        "tags": ["Projects"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Updated Project Name",
+                "description": "Updated project description."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Project updated" }
+        }
+      },
+      "delete": {
+        "summary": "Delete Project",
+        "tags": ["Projects"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Project deleted" }
+        }
+      }
+    },
+    "/projects/{id}/add-members": {
+      "post": {
+        "summary": "Add Members to Project",
+        "tags": ["Projects"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "userIds": ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Members added" }
+        }
+      }
+    },
+    "/projects/{id}/remove-members": {
+      "delete": {
+        "summary": "Remove Members from Project",
+        "tags": ["Projects"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "userIds": ["9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Members removed" }
+        }
+      }
+    },
+    "/projects/{projectId}/tasks": {
+      "post": {
+        "summary": "Create Task in Project",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "title": "Design Database Schema",
+                "description": "Create PostgreSQL schema and models.",
+                "priority": "HIGH",
+                "dueDate": "2026-08-15T12:00:00.000Z",
+                "assigneeId": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Task created successfully" }
+        }
+      },
+      "get": {
+        "summary": "Get Project Tasks",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["TODO", "IN_PROGRESS", "DONE"] } },
+          { "name": "priority", "in": "query", "schema": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] } },
+          { "name": "assigneeId", "in": "query", "schema": { "type": "string", "format": "uuid" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } }
+        ],
+        "responses": {
+          "200": { "description": "Tasks retrieved successfully" }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "summary": "Get Task By ID",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Task details fetched" }
+        }
+      },
+      "patch": {
+        "summary": "Update Task Details (Admin Only)",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "title": "Updated Task Title",
+                "description": "Updated task description",
+                "priority": "HIGH",
+                "dueDate": "2026-08-20T12:00:00.000Z"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Task updated successfully" }
+        }
+      },
+      "delete": {
+        "summary": "Delete Task (Admin Only)",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Task deleted successfully" }
+        }
+      }
+    },
+    "/tasks/{id}/status": {
+      "patch": {
+        "summary": "Update Task Status",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "status": "IN_PROGRESS"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Task status updated" }
+        }
+      }
+    },
+    "/tasks/{id}/assign": {
+      "patch": {
+        "summary": "Reassign Task (Admin Only)",
+        "tags": ["Tasks"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "assigneeId": "c56a4180-65aa-42ec-a945-5fd21dec0538"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Task reassigned successfully" }
+        }
+      }
+    }
+  }
+}
