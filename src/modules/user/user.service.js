@@ -126,3 +126,76 @@ export const changeUserActiveStatusService = async (req) => {
 
   return updatedUser;
 };
+
+export const approveUserService = async (req) => {
+  const userId = req.params.id || req.params.userId;
+
+  const targetUser = await db.findOne({
+    model: "user",
+    where: { id: userId },
+  });
+
+  if (!targetUser) {
+    errorResponse({
+      message: MESSAGES.USER_NOT_FOUND,
+      status: 404,
+    });
+  }
+
+  if(targetUser.approved){
+    errorResponse({
+      message: MESSAGES.USER_ALREADY_APPROVED,
+      status: 400,
+    });
+  }
+
+  const newApproveStatus = true;
+
+  const updatedUser = await db.updateOne({
+    model: "user",
+    where: { id: targetUser.id },
+    data: { approved: newApproveStatus },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      approved: true,
+      active: true,
+      updatedAt: true,
+    },
+  });
+
+  // Clear Redis user cache so status change takes immediate effect
+  try {
+    await redis.del(`user:${targetUser.id}`);
+  } catch (err) {
+    console.error("Redis Cache Clear Error:", err.message);
+  }
+
+  return updatedUser;
+};
+
+export const getAllUsersPendingService = async (req) => {
+  const { page = 1, limit = 10 } = req.query;
+  const where = { approved: false };
+
+  const users = await db.findManyWithPaginationAndCount({
+    model: "user",
+    page,
+    limit,
+    where,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      approved: true,
+      active: true,
+      createdAt: true,
+    },
+  });
+
+  return users;
+};
+

@@ -88,6 +88,12 @@ const generalFeilds = {
     "string.empty": "Nationality cannot be empty",
     "any.required": "Nationality is required",
   }),
+  slug: Joi.string().pattern(/^[a-zA-Z0-9-]+$/).messages({
+    "string.base": "Slug must be a string",
+    "string.empty": "Slug cannot be empty",
+    "any.required": "Slug is required",
+    "string.pattern.base": "Slug must contain only letters and numbers",
+  }),
   age: Joi.number().required().messages({
     "number.base": "Age must be a number",
     "number.empty": "Age cannot be empty",

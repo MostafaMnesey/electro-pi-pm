@@ -19,3 +19,13 @@ export const changeActiveStatusSchema = {
     id: generalFields.id.required(),
   }).required(),
 };
+
+export const changeApproveStatusSchema = {
+  params: Joi.object({
+    id: generalFields.id.required(),
+  }).required(),
+  body: Joi.object({
+    approved: Joi.boolean().optional(),
+  }).optional(),
+};
+

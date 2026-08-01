@@ -12,4 +12,7 @@ router.get("/profile", authentication(), controller.getProfile);
 router.get("/", authentication(), validation(schemas.getAllUsersSchema), authorizeResource(resource), controller.getAllusers);
 router.patch("/:id/active", authentication(), validation(schemas.changeActiveStatusSchema), authorizeResource(resource), controller.changeActiveStatus);
 
+router.get("/pending-approval", authentication(), validation(schemas.getAllUsersSchema), authorizeResource(resource), controller.getAllUsersPending);
+router.patch("/:id/approve", authentication(), validation(schemas.changeApproveStatusSchema), authorizeResource(resource), controller.approveUser);
+
 export default router;

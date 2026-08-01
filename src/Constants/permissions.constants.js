@@ -52,3 +52,4 @@ export const PERMISSIONS_V2 = {
     UPDATE: "settings:update",
   },
 };
+

@@ -46,4 +46,27 @@ export const MESSAGES = {
   TOO_MANY_REQUESTS: "Too many requests, please try again later",
   INVALID_FILE_FORMAT: "Invalid file format or file type not supported",
   FILE_UPLOAD_ERROR: "An error occurred during file upload",
+
+
+  //project
+  PROJECT_CREATED: "Project created successfully",
+  PROJECT_UPDATED: "Project updated successfully",
+  PROJECT_DELETED: "Project deleted successfully",
+  PROJECT_FETCHED: "Project fetched successfully",
+  PROJECT_ALREADY_EXISTS: "Project already exists",
+  MEMBER_ADDED: "Member added successfully",
+  MEMBER_REMOVED: "Member removed successfully",
+  MEMBER_NOT_FOUND: "Member not found",
+  MEMBERS_NOT_FOUND: "Some members not found",
+
+  USER_ALREADY_APPROVED: "User is already approved",
+
+  // task
+  TASK_CREATED: "Task created successfully",
+  TASK_UPDATED: "Task updated successfully",
+  TASK_DELETED: "Task deleted successfully",
+  TASK_FETCHED: "Task fetched successfully",
+  TASK_NOT_FOUND: "Task not found",
+  NOT_PROJECT_MEMBER: "Assignee is not a member of this project",
+  NOT_TASK_ASSIGNEE: "Only the assigned member can update task status",
 };

@@ -10,7 +10,8 @@
     "seed:permissions": "node prisma/seeders/permissionsSeeder.js",
     "seed:roles": "node prisma/seeders/roles.seeder.js",
     "seed:users": "node prisma/seeders/user.seeder.js",
-    "seed:all": "npx prisma db seed"
+    "seed:all": "npx prisma db seed",
+    "test": "node --import dotenv/config --test tests/**/*.test.js"
   },
   "keywords": [],
   "author": "",
