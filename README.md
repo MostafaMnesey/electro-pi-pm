@@ -202,7 +202,22 @@ npm run dev
 
 The API server will start listening at `http://localhost:3009/api/v1`.
 
+
+
+```urls
+
+pgAdmin Url : http://localhost:5080
+
+
+swagger docs Url : http://localhost:5080
+
+
+
+```
 ---
+
+
+
 
 ## 🔑 Test Accounts & Seed Credentials
 
