@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { seedPermissions } from "./seeders/permissionsSeeder.js";
 import { seedRoles } from "./seeders/roles.seeder.js";
 import { seedUsers } from "./seeders/user.seeder.js";
+import { seedProjects } from "./seeders/project.seeder.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ async function main() {
   await seedPermissions(prisma);
   await seedRoles(prisma);
   await seedUsers(prisma);
+  await seedProjects(prisma);
   console.log("--- Seeding Finished Successfully ---");
 }
 

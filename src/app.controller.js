@@ -60,9 +60,17 @@ const bootstrap = async () => {
   app.use(globalRateLimiter); // Apply global rate limiting to all requests
   await redisConnection();
 
-  // Root Router
-  app.use("/api/v1",rootRouter);
+  // Swagger Documentation Setup
+  try {
+    const openapiSpec = JSON.parse(fs.readFileSync(path.resolve("./openapi.json"), "utf8"));
+    app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiSpec));
+    app.get("/openapi.json", (req, res) => res.json(openapiSpec));
+  } catch (err) {
+    console.error("Swagger setup warning:", err.message);
+  }
 
+  // Root Router
+  app.use("/api/v1", rootRouter);
 
   app.use(globalErrorHandling);
 
