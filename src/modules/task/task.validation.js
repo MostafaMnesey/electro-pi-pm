@@ -37,6 +37,7 @@ export const getTasksSchema = {
     status: Joi.string().valid("TODO", "IN_PROGRESS", "DONE").optional(),
     priority: Joi.string().valid("LOW", "MEDIUM", "HIGH").optional(),
     assigneeId: generalFields.id.optional(),
+    search: Joi.string().optional().allow(""),
     page: paginationSchema.page,
     limit: paginationSchema.limit,
   }),
