@@ -62,7 +62,12 @@ const bootstrap = async () => {
 
   // Swagger Documentation Setup
   try {
-    const openapiSpec = JSON.parse(fs.readFileSync(path.resolve("./openapi.json"), "utf8"));
+    const openapiFilePath = [
+      path.resolve("./openapi.json"),
+      path.resolve(process.cwd(), "openapi.json"),
+    ].find((p) => fs.existsSync(p)) || path.resolve("./openapi.json");
+
+    const openapiSpec = JSON.parse(fs.readFileSync(openapiFilePath, "utf8"));
     const swaggerOptions = {
       explorer: true,
       customSiteTitle: "Project Manager API Documentation",

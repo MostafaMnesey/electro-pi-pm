@@ -34,6 +34,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src ./src
 # Required by Prisma CLI (migrate deploy) at runtime to resolve DATABASE_URL
 COPY --from=builder /app/prisma.config.ts ./
+COPY --from=builder /app/openapi.json ./
 
 # Ensure production environment
 ENV NODE_ENV=production
