@@ -104,13 +104,20 @@ export const createTaskService = async (req) => {
 
 export const getProjectTasksService = async (req) => {
   const { projectId } = req.params;
-  const { status, priority, assigneeId, page = 1, limit = 10 } = req.query;
+  const { status, priority, assigneeId, search, page = 1, limit = 10 } = req.query;
 
   const where = { projectId };
 
   if (status) where.status = status;
   if (priority) where.priority = priority;
   if (assigneeId) where.assigneeId = assigneeId;
+
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+    ];
+  }
 
   const tasks = await db.findManyWithPaginationAndCount({
     model: "Task",

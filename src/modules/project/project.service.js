@@ -96,6 +96,35 @@ export const getAllProjectsService = async (req) => {
           },
         },
       },
+
+      tasks: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+          priority: true,
+          dueDate: true,
+          createdAt: true,
+          updatedAt: true,
+
+          creator: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -125,6 +154,35 @@ export const getProjectBySlugService = async (req) => {
       members: {
         select: {
           user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+
+      tasks: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+          priority: true,
+          dueDate: true,
+          createdAt: true,
+          updatedAt: true,
+
+          creator: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          assignee: {
             select: {
               id: true,
               name: true,
@@ -180,6 +238,35 @@ export const getMyProjectsService = async (req) => {
           members: {
             select: {
               user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+          },
+
+          tasks: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              status: true,
+              priority: true,
+              dueDate: true,
+              createdAt: true,
+              updatedAt: true,
+
+              creator: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+
+              assignee: {
                 select: {
                   id: true,
                   name: true,
