@@ -15,7 +15,12 @@ rootRouter.use("/uploads", express.static(path.resolve("./uploads")));
 
 // Swagger UI under /api/v1/docs
 try {
-  const openapiSpec = JSON.parse(fs.readFileSync(path.resolve("./openapi.json"), "utf8"));
+  const openapiFilePath = [
+    path.resolve("./openapi.json"),
+    path.resolve(process.cwd(), "openapi.json"),
+  ].find((p) => fs.existsSync(p)) || path.resolve("./openapi.json");
+
+  const openapiSpec = JSON.parse(fs.readFileSync(openapiFilePath, "utf8"));
   rootRouter.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiSpec));
   rootRouter.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpec));
   rootRouter.get("/openapi.json", (req, res) => res.json(openapiSpec));
