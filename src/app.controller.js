@@ -63,7 +63,12 @@ const bootstrap = async () => {
   // Swagger Documentation Setup
   try {
     const openapiSpec = JSON.parse(fs.readFileSync(path.resolve("./openapi.json"), "utf8"));
-    app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiSpec));
+    const swaggerOptions = {
+      explorer: true,
+      customSiteTitle: "Project Manager API Documentation",
+    };
+    app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiSpec, swaggerOptions));
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpec, swaggerOptions));
     app.get("/openapi.json", (req, res) => res.json(openapiSpec));
   } catch (err) {
     console.error("Swagger setup warning:", err.message);
